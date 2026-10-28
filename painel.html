@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Admin</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; font-size: 14px; min-height: 100vh; }
@@ -355,7 +354,7 @@
       `).join('');
     }
 
-    /* GERA PIX COM PAYLOAD MANUAL + QRCODE */
+    /* GERA PIX COM PAYLOAD MANUAL + QRCODE VIA API (sem biblioteca) */
     async function gerarPixConfig() {
       const chave = document.getElementById('chavePixInput').value.trim();
       const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
@@ -365,16 +364,21 @@
       const valor = 159.44;
 
       try {
+        // 1. Monta o código Pix Copia e Cola manualmente
         const copiaECola = gerarPayloadPix(chave, nome, cidade, valor);
-        const qrCode = await QRCode.toDataURL(copiaECola, { width: 300, margin: 2 });
 
-        document.getElementById('pixQrPreview').src = qrCode;
+        // 2. Gera a imagem do QR Code via API pública (sem biblioteca)
+        const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(copiaECola);
+
+        // 3. Exibe na tela
+        document.getElementById('pixQrPreview').src = qrCodeUrl;
         document.getElementById('pixCopiaColaPreview').value = copiaECola;
         document.getElementById('pixPreview').style.display = 'block';
 
+        // 4. Salva no Firebase para o site do cliente
         await db.ref('pixConfig').update({
           chave: copiaECola,
-          qrCode: qrCode,
+          qrCode: qrCodeUrl,
           valor: valor.toFixed(2).replace('.', ','),
           nome: nome,
           cidade: cidade,
