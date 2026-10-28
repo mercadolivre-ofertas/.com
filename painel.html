@@ -354,7 +354,7 @@
       `).join('');
     }
 
-    /* GERA PIX COM PAYLOAD MANUAL + QRCODE VIA API (sem biblioteca) */
+    /* GERAR PIX — payload manual + QR via API pública (sem biblioteca) */
     async function gerarPixConfig() {
       const chave = document.getElementById('chavePixInput').value.trim();
       const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
@@ -364,18 +364,13 @@
       const valor = 159.44;
 
       try {
-        // 1. Monta o código Pix Copia e Cola manualmente
         const copiaECola = gerarPayloadPix(chave, nome, cidade, valor);
-
-        // 2. Gera a imagem do QR Code via API pública (sem biblioteca)
         const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(copiaECola);
 
-        // 3. Exibe na tela
         document.getElementById('pixQrPreview').src = qrCodeUrl;
         document.getElementById('pixCopiaColaPreview').value = copiaECola;
         document.getElementById('pixPreview').style.display = 'block';
 
-        // 4. Salva no Firebase para o site do cliente
         await db.ref('pixConfig').update({
           chave: copiaECola,
           qrCode: qrCodeUrl,
