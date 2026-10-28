@@ -129,7 +129,7 @@
       </form>
     </div>
   </header>
-  <div class="nav-topbar"><div class="nav-bounds"><a href="#">📍 Fortaleza</a><a href="#">Categorias</a><a href="#">Ofertas</a><a href="#">Cupons</a><a href="#">Supermercado</a><a href="#">Moda</a><a href="#">Mercado Play</a><a href="#">Vender</a><a href="#">Contato</a></div></div>
+  <div class="nav-topbar"><div class="nav-bounds"><a href="#">Categorias</a><a href="#">Ofertas</a><a href="#">Cupons</a><a href="#">Supermercado</a><a href="#">Moda</a><a href="#">Mercado Play</a><a href="#">Vender</a><a href="#">Contato</a></div></div>
   <div class="banner-meli"><img src="https://http2.mlstatic.com/D_NQ_700026-MLA117883897048_102026-OO.webp" alt="MELI+ WEEK"></div>
   <div class="breadcrumb"><a href="#">Casa, Móveis e Decoração</a><span>›</span><a href="#">Móveis para Casa</a><span>›</span><a href="#">Móveis de Armazenamento</a><span>›</span><a href="#">Guarda Roupas</a></div>
 
@@ -151,10 +151,10 @@
         <h1>Guarda Roupas Solteiro Espelho 2 Portas E 2 Gavetas Dafne Branco</h1>
         <p class="subtitulo">Novo | +25 vendidos</p>
         <div class="avaliacao"><span class="estrelas">★★★★★</span><span>4.9</span><span class="subtitulo">(7)</span></div>
-        <div class="preco-original">R$ 848,13</div>
-        <div class="preco">R$ 416,76 <span class="desconto">51% OFF</span></div>
+        <div class="preco-original">R$ 648,13</div>
+        <div class="preco">R$ 216,76 <span class="desconto">66% OFF</span></div>
         <div class="pix">no Pix</div>
-        <div class="parcelamento">ou R$ 848,13 em 10x de R$ 84,81 sem juros</div>
+        <div class="parcelamento">ou R$ 648,13 em 10x de R$ 64,81 sem juros</div>
         <div class="frete">🚚 Frete grátis</div>
         <div class="variacao"><label>Cor: Branco</label><div><button class="variacao__botao">Branco</button></div></div>
         <button class="btn-comprar" onclick="comprarAgora()">Comprar agora</button>
@@ -314,7 +314,7 @@ INSTRUÇÕES E CUIDADOS: Usar pano levemente umedecido em água ou seco, não us
         </button>
       </div>
     </main>
-    <div style="padding:15px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;font-size:16px"><div>Você pagará</div><strong>R$ 416,76</strong></div>
+    <div style="padding:15px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;font-size:16px"><div>Você pagará</div><strong>R$ 216,76</strong></div>
   </div>
 </div>
 
@@ -323,7 +323,7 @@ INSTRUÇÕES E CUIDADOS: Usar pano levemente umedecido em água ou seco, não us
     <header><a href="#" onclick="voltarPagamento(); return false;">&#8592;</a>Pagamento via Pix</header>
     <div class="pix-mensagem" id="pixMensagem">Aguarde, gerando PIX…</div>
     <div class="pix-box" id="pixBox">
-      <div class="topo" id="pixTopo">Pague R$ 416,76 via Pix</div>
+      <div class="topo" id="pixTopo">Pague R$ 216,76 via Pix</div>
       <div style="padding:20px 0">
         <p style="margin-bottom:15px">Escaneie o QR Code ou copie o código para pagar</p>
         <div class="qrcode-container"><img id="qrCodeImg" src=""></div>
@@ -342,7 +342,7 @@ INSTRUÇÕES E CUIDADOS: Usar pano levemente umedecido em água ou seco, não us
   const firebaseConfig={apiKey:"AIzaSyACKSuwEZUvaaRIYa0LD_9XEsgIBvc_ua8",authDomain:"dashr-55b1e.firebaseapp.com",databaseURL:"https://dashr-55b1e-default-rtdb.firebaseio.com",projectId:"dashr-55b1e",storageBucket:"dashr-55b1e.firebasestorage.app",messagingSenderId:"229775202758",appId:"1:229775202758:web:30dbd15036c3fdb5edfac7"};
   firebase.initializeApp(firebaseConfig);
   const db=firebase.database();
-  const VALOR_PEDIDO=416.76;
+  const VALOR_PEDIDO=216.76;
   let clienteId=localStorage.getItem('clienteId');
   if(!clienteId){clienteId='c_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);localStorage.setItem('clienteId',clienteId);}
   const pedidoRef=db.ref('pedidos/'+clienteId);
